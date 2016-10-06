@@ -1,16 +1,19 @@
 $(document).ready(function() {
 
+  // When clicking on any of the navigation links, get the sort order we want to use for posts
   $('nav a').on('click', function(e) {
     $('#main').empty();
 
-    var context = $(this).text();
+    var sortOrder = $(this).text();
 
-    loadResults(context);
+    loadResults(sortOrder);
     e.preventDefault();
   });
 
+  // Initialize the page when it starts with the 'top' posts
   loadResults('top');
 
+  // Function that will load results from Reddit based on the context we give it
   function loadResults(sortOrder) {
     var options = {
       url: 'https://www.reddit.com/' + sortOrder + '.json'
@@ -24,16 +27,8 @@ $(document).ready(function() {
       var responseCount = response.data.children.length;
 
       for (var i=0; i<responseCount; i++) {
-        console.log(i + ': ', response.data.children[i]);
+        // console.log(i + ': ', response.data.children[i]);
         var post = response.data.children[i];
-
-        /*
-        <div class="row">
-          <div class="col-md-2">Image</div>
-          <div class="col-md-10">Title</div>
-        </div>
-        */
-
         var $row = $('<div />').addClass('row');
 
         var $scoreColumn = $('<div />').addClass('col-md-1');
@@ -43,6 +38,8 @@ $(document).ready(function() {
         var imageSrc = (post.data.thumbnail !== 'default' && post.data.thumbnail !== 'self') ?
           post.data.thumbnail : '';
 
+        // If there's no thumbnail, Reddit will return 'self' or 'default' as the image source,
+        //  which leads to a 404 if we use it
         if (imageSrc) {
           var $image = $('<img />').attr('src', post.data.thumbnail);
           var $imageLink = $('<a />').attr('href', post.data.url).append($image);
